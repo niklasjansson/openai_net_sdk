@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace OpenAI.ObjectModels.RequestModels;
@@ -120,7 +121,7 @@ public class FunctionDefinition
     ///     for documentation about the format.
     /// </summary>
     [JsonPropertyName("parameters")]
-    public JsonSchemaObject? Parameters { get; set; }
+    public JsonDocument? Parameters { get; set; }
 }
 
 
@@ -164,26 +165,7 @@ public class FunctionDefinitionBuilder
             throw new ArgumentOutOfRangeException(nameof(fnName), message +
                 " The name of the function must be a-z, A-Z, 0-9, or contain underscores and dashes, with a maximum length of 64.");
         }
-    }
-
-    public FunctionDefinitionBuilder AddParameter(
-        string name, string type, string? description = null,
-        IList<string>? @enum = null, bool required = true)
-    {
-        _definition.Parameters ??= new JsonSchemaObject();
-        _definition.Parameters.Properties ??= new Dictionary<string, JsonSchemaBaseObject>();
-
-        _definition.Parameters.Properties[name] =
-            new JsonSchemaPlainValue() { Type = type, Description = description, Enum = @enum };
-
-        if (required)
-        {
-            _definition.Parameters.Required ??= new List<string>();
-            _definition.Parameters.Required.Add(name);
-        }
-
-        return this;
-    }
+    }    
 
     public FunctionDefinition Build() => _definition;
 }
